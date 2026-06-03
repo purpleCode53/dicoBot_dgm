@@ -63,6 +63,7 @@ def keep_alive():
 threading.Thread(target=keep_alive, daemon=True).start()
 
 intents = discord.Intents.default()
+intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
