@@ -143,4 +143,4 @@ async def before_check():
     await bot.wait_until_ready()
 
 
-bot.run(TOKEN)
+@bot.command(na
