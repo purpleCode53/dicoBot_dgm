@@ -114,6 +114,9 @@ async def check_update():
         changes = get_world_buff(idx)
     except Exception as e:
         await channel.send("err: " + str(e)); return
+    if changes == "section not found":
+        print("new post but no world buff section, skip")
+        return
     await send_msg(channel, build_msg(title, idx, changes))
 
 
