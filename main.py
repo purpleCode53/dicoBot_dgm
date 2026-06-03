@@ -75,12 +75,18 @@ threading.Thread(
 
 # Sleep prevention
 def keep_alive():
-    url = os.environ.get("RENDER_EXTERNAL_URL")
-    if not url: return
+    url = os.environ.get("RENDER_URL") or os.environ.get("RENDER_EXTERNAL_URL")
+    if not url:
+        print("keep_alive: no URL set, skipping")
+        return
+    print("keep_alive: pinging " + url)
     while True:
         time.sleep(600)
-        try: requests.get(url, timeout=10)
-        except: pass
+        try:
+            requests.get(url, timeout=10)
+            print("keep_alive: ping ok")
+        except Exception as e:
+            print("keep_alive: ping failed - " + str(e))
 
 threading.Thread(target=keep_alive, daemon=True).start()
 
