@@ -70,6 +70,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print("ready: " + str(bot.user))
     check_update.start()
+    weekly_buff.start()
 
 @tasks.loop(minutes=CHECK_MIN)
 async def check_update():
@@ -107,3 +108,31 @@ async def cmd_world_buff(ctx):
         await ctx.send(msg[i:i+1900])
 
 bot.run(TOKEN)
+
+
+# 매주 수요일 00:00 KST (화요일 15:00 UTC) 자동 전송
+import datetime
+
+WEEKLY_TIME = datetime.time(hour=15, minute=0, tzinfo=datetime.timezone.utc)
+
+@tasks.loop(time=WEEKLY_TIME)
+async def weekly_buff():
+    # UTC 화요일 = KST 수요일
+    if datetime.datetime.now(datetime.timezone.utc).weekday() != 1:
+        return
+    channel = bot.get_channel(CHANNEL_ID)
+    if not channel:
+        return
+    try:
+        idx, title = get_latest_post()
+        changes = get_world_buff(idx)
+    except Exception as e:
+        await channel.send("err: " + str(e))
+        return
+    msg = "[Update] " + title + "\n" + VIEW_URL.format(idx) + "\n" + "-"*40 + "\n" + changes
+    for i in range(0, len(msg), 1900):
+        await channel.send(msg[i:i+1900])
+
+@weekly_buff.before_loop
+async def before_weekly():
+    await bot.wait_until_ready()
