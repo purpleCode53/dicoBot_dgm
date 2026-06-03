@@ -41,7 +41,7 @@ def get_world_buff(idx):
     soup = BeautifulSoup(resp.text, "lxml")
     pre = soup.find("pre")
     text = pre.get_text() if pre else soup.get_text()
-    keyword = "\xec\x9b\x94\xeb\x93\x9c \xeb\xb2\x84\xed\x94\x84 \xeb\xb3\x80\xea\xb2\xbd"
+    keyword = bytes([0xec,0x9b,0x94,0xeb,0x93,0x9c,0x20,0xeb,0xb2,0x84,0xed,0x94,0x84,0x20,0xeb,0xb3,0x80,0xea,0xb2,0xbd]).decode("utf-8")
     pattern = re.compile(r"(" + re.escape(keyword) + r".*?)(?=\n\d+\)|\n\d+\.|\Z)", re.DOTALL)
     m = pattern.search(text)
     if not m:
@@ -158,7 +158,7 @@ async def before_weekly():
 
 
 # 수동 명령어
-@bot.command(name="\xec\x9b\x94\xeb\x93\x9c\xeb\xb2\x84\xed\x94\x84")
+@bot.command(name="worldbuff")
 async def cmd_world_buff(ctx):
     async with ctx.typing():
         try:
