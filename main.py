@@ -12,10 +12,12 @@
 import os
 import re
 import json
+import threading
 import requests
 import discord
 from discord.ext import commands, tasks
 from bs4 import BeautifulSoup
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── 설정 ──────────────────────────────────────────────────
 TOKEN      = os.environ["DISCORD_TOKEN"]
@@ -90,6 +92,22 @@ def get_game_changes(idx: int) -> str:
     return "\n".join(lines)
 
 
+# ── Render용 더미 HTTP 서버 ────────────────────────────────
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+    def log_message(self, *args):
+        pass  # 로그 출력 억제
+
+def run_health_server():
+    port = int(os.environ.get("PORT", 8080))
+    HTTPServer(("0.0.0.0", port), HealthHandler).serve_forever()
+
+threading.Thread(target=run_health_server, daemon=True).start()
+
+
 # ── 봇 ────────────────────────────────────────────────────
 intents = discord.Intents.default()
 bot     = commands.Bot(command_prefix="!", intents=intents)
@@ -120,28 +138,4 @@ async def check_update():
         print(f"새 게시글 없음 (최신 idx={idx})")
         return
 
-    print(f"새 게시글 발견: idx={idx} / {title}")
-    save_last_idx(idx)
-
-    try:
-        changes = get_game_changes(idx)
-    except Exception as e:
-        await channel.send(f"⚠️ 게시글 크롤링 실패: {e}")
-        return
-
-    url     = VIEW_URL.format(idx)
-    header  = f"🎮 **디지몬RPG 업데이트** | [{title}]({url})\n{'━'*40}\n**📋 게임 내 변경사항**\n"
-    content = header + changes
-
-    # Discord 2000자 제한 처리
-    for i in range(0, len(content), 1900):
-        await channel.send(content[i:i+1900])
-
-
-@check_update.before_loop
-async def before_check():
-    await bot.wait_until_ready()
-
-
-@bot.command(name="월드버프")
-async def manual
+    print(f"새 게시글 발견: idx={idx} / {ti
