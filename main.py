@@ -81,12 +81,12 @@ def keep_alive():
         return
     print("keep_alive: pinging " + url)
     while True:
-        time.sleep(600)
         try:
             requests.get(url, timeout=10)
             print("keep_alive: ping ok")
         except Exception as e:
             print("keep_alive: ping failed - " + str(e))
+        time.sleep(600)
 
 threading.Thread(target=keep_alive, daemon=True).start()
 
