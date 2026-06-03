@@ -142,6 +142,6 @@ async def before_check():
     await bot.wait_until_ready()
 
 
-@bot.command(name="변경사항")
+@bot.command(name="월드버프")
 async def manual_changes(ctx):
     """!�
