@@ -158,7 +158,7 @@ async def before_weekly():
 
 
 # 수동 명령어
-@bot.command(name="worldbuff")
+@bot.command(name="월드버프")
 async def cmd_world_buff(ctx):
     async with ctx.typing():
         try:
