@@ -93,7 +93,7 @@ async def check_update():
 async def before_check():
     await bot.wait_until_ready()
 
-@bot.command(name="worldbuff")
+@bot.command(name="월드버프")
 async def cmd_world_buff(ctx):
     async with ctx.typing():
         try:
